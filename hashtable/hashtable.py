@@ -1,6 +1,6 @@
 class HashTableEntry:
     """
-    Linked List hash table key/value pair
+    Linked lst hash table key/value pair
     """
     def __init__(self, key, value):
         self.key = key
@@ -26,20 +26,20 @@ class HashTable:
         else:
             self.capacity = 8
             raise Exception('The capacity has been set to its minimum: 8.')
-        self.list = [None] * self.capacity
+        self.lst = [HashTableEntry(None,None)] * self.capacity
 
     def get_num_slots(self):
         """
-        Return the length of the list you're using to hold the hash
+        Return the length of the lst you're using to hold the hash
         table data. (Not the number of items stored in the hash table,
-        but the number of slots in the main list.)
+        but the number of slots in the main lst.)
 
         One of the tests relies on this.
 
         Implement this.
         """
         # Your code here
-        return len(self.list)
+        return len(self.lst)
 
 
     def get_load_factor(self):
@@ -49,7 +49,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        
+        return len([x for x in self.lst if x]) / self.capacity
+
+
 
     def fnv1(self, key):
         """
@@ -78,7 +81,13 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-        pass
+        hash = 5381
+
+        for character in key:
+            
+            hash = (hash * 33) + ord(character)
+
+        return hash 
         
         
 
@@ -96,12 +105,33 @@ class HashTable:
         """
         Store the value with the given key.
 
-        Hash collisions should be handled with Linked List Chaining.
+        Hash collisions should be handled with Linked lst Chaining.
 
         Implement this.
         """
         # Your code here
-        self.list[self.hash_index(key)] = value
+        index = self.hash_index(key)
+        if  not self.lst[index]:
+
+            self.lst[index] = HashTableEntry(key,value)
+        
+        else:
+
+          current = self.lst[index]
+
+          while current:
+
+            if current.key == key:
+
+              current.value = value
+              break
+            
+            current = current.next
+          
+          prev = self.lst[index]
+
+          self.lst[index] = HashTableEntry(key,value)
+          self.lst[index].next = prev
 
     def delete(self, key):
         """
@@ -112,14 +142,47 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        if self.hash_index(key) < self.capacity:
+        index = self.hash_index(key)
 
-            self.list[self.hash_index(key)] = None
-        
+        if index < self.capacity and self.lst[index]:
+
+            current = self.lst[index]
+
+            if current.key == key:
+
+                if current.next:
+
+                    previous = self.lst[self.hash_index(key)]
+                    self.lst[self.hash_index(key)] = self.lst[self.hash_index(key)].next
+                    previous.next = None
+                    return
+
+                else: 
+
+                    previous = self.lst[self.hash_index(key)]
+                    self.lst[self.hash_index(key)] = None
+                    previous.next = None
+                    return
+
+            while current.next:
+
+                previous = current
+                current = current.next
+
+                if current.next:
+
+                    previous.next  = current.next
+                    current.next = None
+                    return
+
+                else: 
+
+                    previous.next = None
+                    return
+
         else:
 
             raise Exception('The key was not found.')
-
 
 
     def get(self, key):
@@ -131,13 +194,31 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        if self.hash_index(key) < self.capacity:
+        index = self.hash_index(key)
+        if index < self.capacity:
 
-            return self.list[self.hash_index(key)]
-        
+            if not self.lst[index]:
+
+                return None
+
+            current = self.lst[index]
+            if current.key == key:
+
+              return current.value
+
+            while current.next:
+
+              if current.next.key == key:
+
+                return current.next.value
+
+              current = current.next
+            
+            return
+
         else:
 
-            return None
+          return
 
 
 
@@ -149,9 +230,17 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
-        self.list = self.list + [None] * (new_capacity - self.capacity)
+        
         self.capacity = new_capacity
+        self.previous_lst = self.lst
+        self.lst = [None] * self.capacity
+        
+        
+        for i in self.previous_lst:
+
+            if i:
+
+                self.lst[self.hash_index(i.key)] = i
         
 
 if __name__ == "__main__":
@@ -188,3 +277,7 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     print("")
+
+    print(ht.get_load_factor())
+
+    print(ht.get("line_10"))
