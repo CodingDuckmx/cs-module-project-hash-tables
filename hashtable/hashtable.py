@@ -133,6 +133,14 @@ class HashTable:
           self.lst[index] = HashTableEntry(key,value)
           self.lst[index].next = prev
 
+        if self.get_load_factor() > 0.7:
+
+            self.resize(self.capacity * 2)
+        
+
+
+
+
     def delete(self, key):
         """
         Remove the value stored with the given key.
@@ -184,6 +192,9 @@ class HashTable:
 
             raise Exception('The key was not found.')
 
+        if self.get_load_factor() < 0.2:
+
+            self.resize(int(self.capacity // 2))
 
     def get(self, key):
         """
@@ -230,17 +241,31 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        
+
+        if new_capacity < 8:
+
+            print('The new capacity has been set to is minimum: 8.')
+            new_capacity = 8
+
+        previous_lst = self.lst.copy()
         self.capacity = new_capacity
-        self.previous_lst = self.lst
         self.lst = [None] * self.capacity
-        
-        
-        for i in self.previous_lst:
 
-            if i:
+        for i in range(len(previous_lst)):
 
-                self.lst[self.hash_index(i.key)] = i
+            if previous_lst[i]:
+
+                current = previous_lst[i]
+
+                while current:
+                    
+                    if current.key:
+
+                        self.put(current.key,current.value)
+                    
+                    current = current.next
+
+
         
 
 if __name__ == "__main__":
@@ -278,6 +303,3 @@ if __name__ == "__main__":
 
     print("")
 
-    print(ht.get_load_factor())
-
-    print(ht.get("line_10"))
