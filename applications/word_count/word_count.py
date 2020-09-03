@@ -1,38 +1,36 @@
 def word_count(s):
     # Your code here
 
-    dct = {}
-
     s = s.lower().split()
 
     ignored = set(x for x in '" : ; , . - + = / \ | [ ] { } ( ) * ^ &'.split(' '))
 
-    # if set(s).intersection(ignored) != {}:
 
-    #     for symbol in ignored:
+    for i in range(len(s)):
 
-    #         if symbol in s:
+        if s[i][0] in ignored:
 
-    #             s.replace(symbol,'')
+            s[i] = s[i][1:]
 
+        if s[i][-1] in ignored:
+
+            s[i] = s[i][:-1]
     
+        try:
+            
+            if s[i][1] in ignored:
 
-    for word in s:
+                s.pop(i)
 
-        if word == '' or word in ignored:
+        except:
+
             continue
 
-        if word not in dct:
 
-            dct[word] = 0
-        
-        dct[word] +=1
+
+    dct = {word : s.count(word) for word in s if word not in ignored}
 
     return dct
-
-
-    
-
 
 if __name__ == "__main__":
     print(word_count(""))
