@@ -15,10 +15,15 @@ def f(x):
 
 # Your code here
 
-Q = {(a,b,c,d): a+b-c+d+3 for a,b,d in itertools.product(q,repeat = 3) for c in q}
-for pair, result in Q.items():
+Q = {(a,b,d) : a+b+d+3 for a,b,d in itertools.product(q,repeat=3)}
 
-  if result == 0:
+for c in q:
 
-    print(f'f({pair[0]}) + f({pair[1]}) = f({pair[2]}) - f({pair[3]})'
-       f'    {f(pair[0])} + {f(pair[1])} = {f(pair[2])} - {f(pair[3])}')
+  for keys, value in Q.items():
+
+    if value == c:
+
+      a,b,d = keys
+  
+      print(f'f({a}) + f({b}) = f({c}) - f({d})'
+        f'    {f(a)} + {f(b)} = {f(c)} - {f(d)}')   
